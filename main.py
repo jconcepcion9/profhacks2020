@@ -1,6 +1,8 @@
+#main file
+import lib
 import tkinter
 
 top = tkinter.Tk()
 top.mainloop()
 
-print("hello word")
+lib.hello("A team")
