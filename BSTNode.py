@@ -8,8 +8,8 @@ class BSTNode:
 
     def __init__(self, info):
         self.info = info
-        left = None
-        right = None
+        self.left = None
+        self.right = None
 
     def setInfo(self, info):
         self.info = info
