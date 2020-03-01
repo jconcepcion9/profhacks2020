@@ -6,22 +6,37 @@ class Cell:
     def __init__(self, x:int, y:int, grid, onclick, i):
         self.x = x
         self.y = y
-        self.cell = tkinter.Button(grid, text=str(i+1), bg="#DDDDDD", command=lambda:onclick(x, y))
+        self.cell = tkinter.Button(grid, text="", bg="#DDDDDD", command=lambda:onclick(x, y))
         self.cell.grid(row=y, column=x, sticky="nesw", padx=30, pady=30)
+        self.state = "";
 
+    # set the function that will be called when the button is clicked
+    # the function will be passed a reference to the clicked cell
     '''f arguments:
-        x: int
-        y: int
+        self   reference to this Cell
     '''
     def set_click_handler(self, f):
         def handler():
             #call the callback with x and y so the callback can use that information
-            f(self.x, self.y)
+            f(self)
 
         self.cell.config(command=handler)
 
     def get_cell(self) -> tkinter.Button:
         return self.cell
+
+    # change cell state ('X' or 'O')
+
+    def set_x(self):
+        self.cell.config(text="X")
+        self.state = "X"
+
+    def set_o(self):
+        self.cell.config(text="O")
+        self.state = "O"
+
+    def is_already_set(self) -> bool:
+        return self.state == "O" or self.state == "X"
 
 
 #the main game window. a grid of cells with clickable buttons
@@ -55,27 +70,26 @@ class GameWindow:
         self.is_player_turn = True
 
     # enable and disable buttons
-    def disable_buttons(self):
+    def __disable_buttons(self):
         for cell in self.cells:
             cell.cell.config(state=tkinter.DISABLED)
 
-    def enable_buttons(self):
+    def __enable_buttons(self):
         for cell in self.cells:
             cell.cell.config(state=tkinter.ACTIVE)
     
     # set handlers
-    def set_switch_turn(self, f):
+    def set_on_switch_turn(self, f):
         self.switch_turn = f
 
     '''f arguments:
-        x: int  x position of clicked cell
-        y: int  y position of clicked cell
-        self    reference to this GameWindow object
+        cell: Cell  clicked cell
+        self        reference to this GameWindow object
     '''
     def set_on_click(self, f):
         for cell in self.cells:
-            def handle(x, y):
-                f(x, y, self)
+            def handle(cell):
+                f(cell, self)
 
             cell.set_click_handler(handle)
 
@@ -84,11 +98,25 @@ class GameWindow:
     def player_turn(self):
         self.is_player_turn = True
         self.switch_turn(self.is_player_turn)
-        self.enable_buttons()
+        self.__enable_buttons()
 
     def opponent_turn(self):
         self.is_player_turn = False
         self.switch_turn(self.is_player_turn)
-        self.disable_buttons()
+        self.__disable_buttons()
 
-    
+
+
+    # if 'is_player' is false then it will make the move for the opponent
+    # will raise an exception if the cell was already set
+    def click_cell(self, x:int, y:int, is_player:bool):
+        index = y*3 + x
+        print(index)
+        cell = self.cells[index]
+        if cell.is_already_set():
+            raise "cell already set"
+
+        if is_player:
+            cell.set_o()
+        else:
+            cell.set_x()
