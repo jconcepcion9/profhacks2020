@@ -1,14 +1,17 @@
 #main file
-import lib
 import tkinter
+import ui
+import debugwindow
+import threading
 
-#create a window
-top = tkinter.Tk()
-#create a label in the 'top' window
-w = tkinter.Label(top, text="Hello, world!")
-#?
-w.pack()
-#run the window. this line will not finish until the window closes
-top.mainloop()
+#start the debug window in a new thread
+db = debugwindow.DebugWindow()
+threading.Thread(target=db.run, args=(1,))
 
-lib.hello("A team")
+#function run when a cell is clicked
+def onclick(a, b):
+    db.set_other("you clicked cell "+str(a)+" "+str(b))
+
+#start the main game window
+game_window = ui.GameWindow(onclick)
+game_window.run()
