@@ -1,0 +1,7 @@
+git config --global user.user <your user name>
+git config --global user.email <your email>
+
+git remote add origin https://github.com/jconcepcion9/profhacks2020.git
+
+
+git pull origin master
